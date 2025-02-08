@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PA Bebbe Study Hub</title>
+  <style>
+    /* General & Background */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #ffccff;
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+    /* Floating Animation Container */
+    #animation-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+    /* Live Time & Date */
+    #time-date {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 10px;
+      color: #333;
+    }
+    /* Journal & Reminders Section */
+    #journal-section {
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    #journalPrompts {
+      margin-top: 10px;
+    }
+    .journal-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffe6f2;
+      padding: 10px;
+      border-radius: 8px;
+      margin: 5px 0;
+    }
+    .delete-btn {
+      background: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Floating Emojis -->
+  <div id="animation-container"></div>
+
+  <!-- Header with Time & Date -->
+  <header>
+    <div id="time-date"></div>
+    <h1 id="greeting">
+      <span>H</span><span>I</span> <span>P</span><span>A</span> <span>B</span><span>E</span><span>B</span><span>B</span><span>E</span>
+    </h1>
+  </header>
+
+  <!-- Main Content with Columns -->
+  <main>
+    <div class="columns-container">
+      <!-- Left Column: Flashcards & Journal -->
+      <div class="column left-column">
+        <section id="flashcards-section">
+          <h2>Flashcards</h2>
+          <form id="flashcardForm">
+            <input type="text" id="flashcardCategory" placeholder="Category (e.g., Anatomy)" required>
+            <input type="text" id="flashcardQuestion" placeholder="Question" required>
+            <input type="text" id="flashcardAnswer" placeholder="Answer" required>
+            <button type="submit">Add Flashcard</button>
+          </form>
+          <div id="flashcardsContainer"></div>
+        </section>
+
+        <!-- Journal & Reminders Section -->
+        <section id="journal-section">
+          <h2>Journal & Reminders</h2>
+          <input type="text" id="journalInput" placeholder="Write a reminder or note..." style="width: 80%; padding: 5px;">
+          <button onclick="addJournalEntry()">Save</button>
+          <div id="journalPrompts"></div>
+        </section>
+      </div>
+      
+      <!-- Right Column: YouTube, Google Search, Gary Rating, Affirmations -->
+      <div class="column right-column">
+        <section id="youtube-section">
+          <h2>YouTube Search</h2>
+          <input type="text" id="youtubeSearch" placeholder="Search YouTube">
+          <button onclick="searchYouTube()">Search</button>
+          <div id="youtubeResults"></div>
+        </section>
+
+        <section id="google-section">
+          <h2>Google Search</h2>
+          <input type="text" id="googleSearch" placeholder="Search Google">
+          <button onclick="searchGoogle()">Search</button>
+        </section>
+
+        <section id="gary-rating">
+          <h2>Gary Rating</h2>
+          <button onclick="rateGary(1)">1</button>
+          <button onclick="rateGary(2)">2</button>
+          <button onclick="rateGary(3)">3</button>
+          <button onclick="rateGary(4)">4</button>
+          <button onclick="rateGary(5)">5</button>
+          <p id="garyResult"></p>
+        </section>
+
+        <section id="affirmations">
+          <h2>Positive Affirmations</h2>
+          <p id="affirmationText">You are amazing!</p>
+          <button onclick="newAffirmation()">New Affirmation</button>
+        </section>
+
+        <section id="social-media">
+          <h2>Quick Links</h2>
+          <button onclick="window.open('https://www.spotify.com', '_blank')">Spotify</button>
+          <button onclick="window.open('https://www.instagram.com', '_blank')">Instagram</button>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    /* Live Time & Date */
+    function updateTimeDate() {
+      const now = new Date();
+      document.getElementById('time-date').textContent = now.toLocaleString();
+    }
+    setInterval(updateTimeDate, 1000);
+    updateTimeDate();
+
+    /* Journal & Reminders */
+    let journalEntries = JSON.parse(localStorage.getItem('journalEntries')) || [];
+    function addJournalEntry() {
+      const input = document.getElementById('journalInput').value.trim();
+      if (input) {
+        journalEntries.push(input);
+        localStorage.setItem('journalEntries', JSON.stringify(journalEntries));
+        updateJournalUI();
+        document.getElementById('journalInput').value = '';
+      }
+    }
+    function deleteJournalEntry(index) {
+      journalEntries.splice(index, 1);
+      localStorage.setItem('journalEntries', JSON.stringify(journalEntries));
+      updateJournalUI();
+    }
+    function updateJournalUI() {
+      const container = document.getElementById('journalPrompts');
+      container.innerHTML = '';
+      journalEntries.forEach((entry, index) => {
+        const div = document.createElement('div');
+        div.className = 'journal-item';
+        div.innerHTML = `${entry} <button class='delete-btn' onclick='deleteJournalEntry(${index})'>Delete</button>`;
+        container.appendChild(div);
+      });
+    }
+    updateJournalUI();
+  </script>
+</body>
+</html>
