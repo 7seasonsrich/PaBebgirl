@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PA Bebbe Study Hub</title>
+  <style>
+    /* General & Background */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #ffccff; /* light pink */
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Floating Animation */
+    #animation-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .floating-emoji {
+      position: absolute;
+      font-size: 24px;
+      opacity: 0;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh); opacity: 1; }
+      100% { transform: translateY(-10vh); opacity: 0; }
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 20px;
+    }
+
+    #greeting {
+      font-family: 'Brush Script MT', cursive;
+      font-size: 48px;
+      color: red;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      display: inline-block;
+      transition: transform 0.3s, text-shadow 0.3s;
+    }
+
+    #greeting:hover {
+      transform: scale(1.1);
+      text-shadow: 4px 4px 6px rgba(0,0,0,0.5);
+    }
+
+    /* Layout */
+    main {
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .columns-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .column {
+      flex: 1;
+      margin: 10px;
+      min-width: 300px;
+    }
+
+    /* Sections */
+    section {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    /* Buttons */
+    button {
+      padding: 10px;
+      background-color: #6a0dad;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* Date & Time */
+    #date-time {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Animated Floating Emojis -->
+  <div id="animation-container"></div>
+
+  <!-- Header -->
+  <header>
+    <h1 id="greeting">Hi PA Bebbe</h1>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <div class="columns-container">
+
+      <!-- Left Column: Medication & YouTube -->
+      <div class="column left-column">
+        <section>
+          <h2>Medication Search</h2>
+          <input type="text" id="medicationInput" placeholder="Enter medication name">
+          <button onclick="searchMedication()">Search</button>
+          <div id="medicationResults"></div>
+        </section>
+
+        <section>
+          <h2>YouTube</h2>
+          <input type="text" id="youtubeInput" placeholder="Enter YouTube URL">
+          <button onclick="loadYouTubeVideo()">Play</button>
+          <iframe id="youtubePlayer" width="300" height="170"></iframe>
+        </section>
+      </div>
+
+      <!-- Center Column: Affirmations, Gary Rating, Instagram & Spotify -->
+      <div class="column center-column">
+        <section>
+          <h2>Positive Affirmations</h2>
+          <div id="affirmations">
+            <p id="affirmationText">You are capable of amazing things! 💖</p>
+            <button onclick="nextAffirmation()">Next</button>
+          </div>
+        </section>
+
+        <section>
+          <h2>Gary Rating (1-10)</h2>
+          <select id="garyRating">
+            <option value="1">1 - Not feeling great</option>
+            <option value="2">2 - Could be better</option>
+            <option value="3">3 - Meh</option>
+            <option value="4">4 - Slightly okay</option>
+            <option value="5">5 - Neutral</option>
+            <option value="6">6 - Feeling alright</option>
+            <option value="7">7 - Pretty good</option>
+            <option value="8">8 - Great!</option>
+            <option value="9">9 - Amazing!</option>
+            <option value="10">10 - On top of the world!</option>
+          </select>
+          <button onclick="submitRating()">Submit</button>
+        </section>
+
+        <section>
+          <h2>Social & Music</h2>
+          <a href="https://www.instagram.com/yourusername" target="_blank">
+            <button>Instagram</button>
+          </a>
+          <button onclick="playSpotifySong()">Spotify</button>
+        </section>
+      </div>
+
+      <!-- Right Column: Flashcards & Reminder/Journal -->
+      <div class="column right-column">
+        <section>
+          <h2>Flashcards</h2>
+          <form id="flashcardForm">
+            <input type="text" id="flashcardQuestion" placeholder="Question">
+            <input type="text" id="flashcardAnswer" placeholder="Answer">
+            <button type="submit">Add</button>
+          </form>
+          <div id="flashcardsContainer"></div>
+        </section>
+
+        <section>
+          <h2>Reminder & Journal</h2>
+          <div id="date-time"></div>
+          <textarea id="reminder-text" placeholder="Write your reminder or journal entry..."></textarea>
+          <button id="saveReminder">Save</button>
+          <div id="reminderDisplay"></div>
+        </section>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    function generateFloatingEmojis(count) {
+      const container = document.getElementById('animation-container');
+      const emojis = ["♥", "🌸", "⭐", "🦋"];
+      for (let i = 0; i < count; i++) {
+        const emojiSpan = document.createElement('span');
+        emojiSpan.classList.add('floating-emoji');
+        emojiSpan.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+        emojiSpan.style.left = Math.random() * 100 + "vw";
+        emojiSpan.style.animationDuration = (Math.random() * 12 + 8) + "s";
+        emojiSpan.style.animationDelay = Math.random() * 10 + "s";
+        container.appendChild(emojiSpan);
+      }
+    }
+    generateFloatingEmojis(30);
+
+    function updateDateTime() {
+      document.getElementById('date-time').innerText = new Date().toLocaleString();
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    function loadYouTubeVideo() {
+      const input = document.getElementById('youtubeInput').value.trim();
+      const videoId = input.split("v=")[1];
+      document.getElementById('youtubePlayer').src = "https://www.youtube.com/embed/" + videoId;
+    }
+
+    function playSpotifySong() {
+      window.open("https://open.spotify.com", "_blank");
+    }
+
+    function nextAffirmation() {
+      document.getElementById('affirmationText').innerText = "You are enough just as you are! 💫";
+    }
+  </script>
+
+</body>
+</html>
